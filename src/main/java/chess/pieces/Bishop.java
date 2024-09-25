@@ -1,5 +1,7 @@
 package chess.pieces;
 
+import chess.Board;
+
 import java.util.ArrayList;
 
 public class Bishop extends Piece {
@@ -10,7 +12,8 @@ public class Bishop extends Piece {
 
     @Override
     public ArrayList<Integer> findMoves() {
-        ArrayList<Integer> defaultMoves = new ArrayList<>();
+        ArrayList<Integer> validMoves = new ArrayList<>();
+        validMoves.add(location);
 
         int[] directions = {7, 9, -7, -9};
         int[] distances = distanceToEdges();
@@ -20,7 +23,18 @@ public class Bishop extends Piece {
             int check = location + movement;
 
             while (distances[i] > 0) {
-                defaultMoves.add(check);
+                //Attacking own color
+                if (checkAttackSquare(this.location, check, true)) {
+                    break;
+                //Attacking other color
+                } else if (checkAttackSquare(this.location, check, false)) {
+                    validMoves.add(check);
+                    break;
+                //Placed on empty square
+                } else {
+                    validMoves.add(check);
+                }
+
                 check += movement;
                 distances[i] -= 1;
             }
@@ -28,7 +42,20 @@ public class Bishop extends Piece {
             i++;
         }
 
-        return defaultMoves;
+        return validMoves;
+    }
+
+    //Returns whether attacking color of choice (same color if boolean true, other color if false)
+    public boolean checkAttackSquare(int pieceLocation, int moveLocation, boolean sameColor) {
+        //Protects cases where square is empty from null reference
+        if (Board.getInstance().getSquare(moveLocation).getValue() == 0) {
+            return false;
+        //Checks for attacks on same color if sameColor true, otherwise other color
+        } else if (this.isWhite == Board.getInstance().getSquare(moveLocation).getPiece().isWhite) {
+            return sameColor;
+        } else {
+            return !sameColor;
+        }
     }
 
     public int[] distanceToEdges() {

@@ -1,5 +1,7 @@
 package chess.pieces;
 
+import chess.Board;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -12,24 +14,58 @@ public class Knight extends Piece {
 
     @Override
     public ArrayList<Integer> findMoves() {
-        ArrayList<Integer> moves = new ArrayList<>();
-        int[] moveLocations = {6, -6, 10, -10, 15, -15, 17, -17};
+        ArrayList<Integer> defaultMoves = new ArrayList<Integer> (0);
 
-        for (int moveLocation : moveLocations) {
-            if (inbounds(location + moveLocation)) {
-                moves.add(location + moveLocation);
-            }
+        ArrayList<Integer> validMoves = new ArrayList<>(0);
+        validMoves.add(location);
 
+        //Checks for wrap-arounds
+        if (this.location % 8 < 6) {
+            defaultMoves.add(this.location + 10);
+            defaultMoves.add(this.location - 6);
+
+            defaultMoves.add(this.location + 17);
+            defaultMoves.add(this.location - 15);
+        } else if (this.location % 8 == 6) {
+            defaultMoves.add(this.location + 17);
+            defaultMoves.add(this.location - 15);
+        }
+        if (this.location % 8 > 1) {
+            defaultMoves.add(this.location + 6);
+            defaultMoves.add(this.location - 10);
+
+            defaultMoves.add(this.location + 15);
+            defaultMoves.add(this.location - 17);
+        } else if (this.location % 8 == 1) {
+            defaultMoves.add(this.location + 15);
+            defaultMoves.add(this.location - 17);
         }
 
-        return moves;
+        for (Integer move : defaultMoves) {
+            if (checkValidMove(location, move)) {
+                validMoves.add(move);
+            }
+        }
+
+        return validMoves;
     }
 
-    public boolean inbounds(int moveLocation) {
-        if (moveLocation > 64 || moveLocation < 0) {
+    @Override
+    public boolean checkValidMove(int pieceLocation, int moveLocation) {
+        //Inbounds check
+        if (moveLocation > 63 || moveLocation < 0) {
+            return false;
+        }
+
+        //Protects cases where square is empty from null reference
+        if (Board.getInstance().getSquare(moveLocation).getValue() == 0) {
+            return true;
+        //Checks for attacks on same color
+        } else if (this.isWhite == Board.getInstance().getSquare(moveLocation).getPiece().isWhite) {
             return false;
         }
 
         return true;
     }
+
 }

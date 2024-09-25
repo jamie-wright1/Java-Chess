@@ -8,8 +8,6 @@ import java.awt.*;
 public class SquareView extends JButton {
     int location;
 
-
-
     public SquareView(int row, int column, int squareType) {
         location = 8 * row + column;
 
@@ -29,44 +27,43 @@ public class SquareView extends JButton {
 
         switch (value) {
             case 9:
-                piece = new ImageIcon("src/chessPieces/blackPieces/blackPawn.png");
+                piece = new ImageIcon("src/chessPieceImages/blackPieces/blackPawn.png");
                 break;
             case 10:
-                piece = new ImageIcon("src/chessPieces/blackPieces/blackKnight.png");
+                piece = new ImageIcon("src/chessPieceImages/blackPieces/blackKnight.png");
                 break;
             case 11:
-                piece = new ImageIcon("src/chessPieces/blackPieces/blackBishop.png");
+                piece = new ImageIcon("src/chessPieceImages/blackPieces/blackBishop.png");
                 break;
             case 12:
-                piece = new ImageIcon("src/chessPieces/blackPieces/blackRook.png");
+                piece = new ImageIcon("src/chessPieceImages/blackPieces/blackRook.png");
                 break;
             case 13:
-                piece = new ImageIcon("src/chessPieces/blackPieces/blackQueen.png");
+                piece = new ImageIcon("src/chessPieceImages/blackPieces/blackQueen.png");
                 break;
             case 14:
-                piece = new ImageIcon("src/chessPieces/blackPieces/blackKing.png");
+                piece = new ImageIcon("src/chessPieceImages/blackPieces/blackKing.png");
                 break;
             case 17:
-                piece = new ImageIcon("src/chessPieces/whitePieces/whitePawn.png");
+                piece = new ImageIcon("src/chessPieceImages/whitePieces/whitePawn.png");
                 break;
             case 18:
-                piece = new ImageIcon("src/chessPieces/whitePieces/whiteKnight.png");
+                piece = new ImageIcon("src/chessPieceImages/whitePieces/whiteKnight.png");
                 break;
             case 19:
-                piece = new ImageIcon("src/chessPieces/whitePieces/whiteBishop.png");
+                piece = new ImageIcon("src/chessPieceImages/whitePieces/whiteBishop.png");
                 break;
             case 20:
-                piece = new ImageIcon("src/chessPieces/whitePieces/whiteRook.png");
+                piece = new ImageIcon("src/chessPieceImages/whitePieces/whiteRook.png");
                 break;
             case 21:
-                piece = new ImageIcon("src/chessPieces/whitePieces/whiteQueen.png");
+                piece = new ImageIcon("src/chessPieceImages/whitePieces/whiteQueen.png");
                 break;
             case 22:
-                piece = new ImageIcon("src/chessPieces/whitePieces/whiteKing.png");
+                piece = new ImageIcon("src/chessPieceImages/whitePieces/whiteKing.png");
                 break;
             default:
-                piece = new ImageIcon();
-                return piece;
+                return null;
         }
 
         Image pieceResizable = piece.getImage();
@@ -76,6 +73,21 @@ public class SquareView extends JButton {
 
     public void setIcon(Integer squareType) {
         super.setIcon(pieceDisplay(squareType));
+    }
+
+    public void highlight() {
+        JPanel highlight = new JPanel();
+
+        this.add(highlight);
+
+        highlight.setBackground(new Color(200, 170, 230, 120));
+
+        this.repaint();
+    }
+
+    public void unHighlight() {
+        this.removeAll();
+        this.repaint();
     }
 
 }

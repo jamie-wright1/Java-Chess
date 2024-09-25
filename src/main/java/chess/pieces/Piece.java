@@ -57,4 +57,8 @@ public abstract class Piece {
 
     public abstract ArrayList<Integer> findMoves();
 
+    public boolean checkValidMove (int pieceLocation, int moveLocation) {
+        return false;
+    };
+
 }

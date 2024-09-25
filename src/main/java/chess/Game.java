@@ -2,37 +2,41 @@ package chess;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-public class Game extends JFrame {
+public class Game extends JFrame implements PropertyChangeListener {
     private String startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
-    private BoardView board;
-    private Board boardModel;
+    private int turnNumber = 0;
+
+    private BoardView boardView;
+    private Board board;
     private Controller controller;
 
-    Player player1;
-    Player player2;
+    Player playerOne;
+    Player playerTwo;
 
     public Game() {
-        board = new BoardView();
-        boardModel = new Board();
-        controller = new Controller(board, boardModel);
+        boardView = new BoardView();
+        board = Board.getInstance();
+        playerOne = new Player(getName(), true);
+        playerTwo = new Player(getName(), false);
 
-        player1 = new Player(getName());
-        player2 = new Player(getName());
+        controller = new Controller(boardView, board, playerOne, playerTwo, this);
 
-        boardModel.addPropertyChangeListener(board);
-        boardModel.fenToBoard(startFen);
+        //boardView and game "listen" to the board
+        board.addPropertyChangeListener(boardView);
+        board.addPropertyChangeListener(this);
+
+        board.fenToBoard(startFen);
 
         setTitle("Chess");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(700, 700);
         getContentPane().setBackground(Color.DARK_GRAY);
         setLayout(new BorderLayout());
-        add(board, BorderLayout.CENTER);
+        add(boardView, BorderLayout.CENTER);
         pack();
         setResizable(false);
         setVisible(true);
@@ -46,4 +50,21 @@ public class Game extends JFrame {
         return "defaultName";
     }
 
+    public void squareClicked(Square square) {
+        if (turnNumber % 2 == 0) {
+            playerOne.squareClicked(square);
+        } else {
+            playerTwo.squareClicked(square);
+        }
+
+        return;
+    }
+
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("turnOver".equals(evt.getPropertyName())) {
+            turnNumber++;
+        }
+    }
 }

@@ -33,31 +33,41 @@ public class BoardView extends JPanel implements PropertyChangeListener {
         }
     }
 
+    public ArrayList<SquareView> getSquares() {
+        return squares;
+    }
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        String propertyName = evt.getPropertyName();
-        int oldValue = (Integer) evt.getOldValue();
-        int newValue = (Integer) evt.getNewValue();
+        if ("boardUpdated".equals(evt.getPropertyName())) {
+            ArrayList<Integer> oldList = (ArrayList<Integer>) evt.getOldValue();
+            ArrayList<Integer> newList = (ArrayList<Integer>) evt.getNewValue();
 
-        if ("valueChanged".equals(propertyName)) {
-            newValue = newValue - 100;
-            squares.get(oldValue).setIcon(newValue);
+            for (int i = 0; i < newList.size(); i++) {
+                if (oldList.get(i) != newList.get(i)) {
+                    squares.get(i).setIcon(newList.get(i));
+                }
+            }
+
+            repaint();
         }
-        else if ("highlightSquare".equals(propertyName)) {
-            if (newValue == -1) {
-                squares.get(oldValue).setBackground(Color.WHITE);
-            } else {
-                if ((oldValue % 8 + oldValue / 8) % 2 == 0) {
-                    squares.get(oldValue).setBackground(Color.LIGHT_GRAY);
-                }
-                else {
-                    squares.get(oldValue).setBackground(Color.GRAY);
-                }
+
+        if ("turnOver".equals(evt.getPropertyName()) || "unHighlight".equals(evt.getPropertyName())) {
+            unHighlightBoard();
+        }
+
+        if ("newHighlights".equals(evt.getPropertyName())) {
+            ArrayList<Integer> newList = (ArrayList<Integer>) evt.getNewValue();
+
+            for (Integer index : newList) {
+                squares.get(index).highlight();
             }
         }
     }
 
-    public ArrayList<SquareView> getSquares() {
-        return squares;
+    public void unHighlightBoard() {
+        for (SquareView square : squares) {
+            square.unHighlight();
+        }
     }
 }

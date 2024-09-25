@@ -6,33 +6,32 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 public class Controller {
-    private BoardView board;
+    private BoardView boardView;
     private Board boardModel;
-    private PropertyChangeSupport propertyChangeSupport;
+    private Player whitePlayer;
+    private Player blackPlayer;
+    private Game game;
 
-    public Controller(BoardView board, Board boardModel) {
-        propertyChangeSupport = new PropertyChangeSupport(this);
-        this.board = board;
+    int turn;
+
+    public Controller(BoardView boardView, Board boardModel, Player playerOne, Player playerTwo, Game game) {
+        this.boardView = boardView;
         this.boardModel = boardModel;
+        this.whitePlayer = playerOne;
+        this.blackPlayer = playerTwo;
+        this.game = game;
+
 
         int i = 0;
-        for (SquareView square: board.getSquares()) {
-            int finalI = i;
-            square.addActionListener(new ActionListener() {
+        for (SquareView squareView: boardView.getSquares()) {
+            Square square = boardModel.getSquare(i);
+            squareView.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    boardModel.squareClicked(finalI);
+                    game.squareClicked(square);
                 }
             });
             i++;
         }
-    }
-
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 }

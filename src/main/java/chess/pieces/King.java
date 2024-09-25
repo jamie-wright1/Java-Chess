@@ -16,6 +16,7 @@ public class King extends Piece {
     @Override
     public ArrayList<Integer> findMoves() {
         ArrayList<Integer> defaultMoves = new ArrayList<>();
+        defaultMoves.add(location);
 
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
@@ -26,6 +27,11 @@ public class King extends Piece {
             }
         }
         return defaultMoves;
+    }
+
+    @Override
+    public boolean checkValidMove(int pieceLocation, int moveLocation) {
+        return false;
     }
 
     public boolean inBounds(int moveLocation) {
