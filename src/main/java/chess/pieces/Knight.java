@@ -14,10 +14,9 @@ public class Knight extends Piece {
 
     @Override
     public ArrayList<Integer> findMoves() {
-        ArrayList<Integer> defaultMoves = new ArrayList<Integer> (0);
+        ArrayList<Integer> defaultMoves = new ArrayList<>(0);
 
         ArrayList<Integer> validMoves = new ArrayList<>(0);
-        validMoves.add(location);
 
         //Checks for wrap-arounds
         if (this.location % 8 < 6) {
@@ -47,10 +46,30 @@ public class Knight extends Piece {
             }
         }
 
-        return validMoves;
+        return trimMoves(validMoves);
     }
 
     @Override
+    public boolean isChecking() {
+        ArrayList<Integer> moves = new ArrayList<>
+            (Arrays.asList(location + 10, location - 10, location + 6, location - 6,
+                            location + 15, location + 17, location - 15, location - 17));
+
+        for (Integer move : moves) {
+            if (isWhite) {
+                if (inBounds(move) && Board.getInstance().getSquare(move).getValue() == 14) {
+                    return true;
+                    }
+            } else {
+                if (inBounds(move) && Board.getInstance().getSquare(move).getValue() == 22) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public boolean checkValidMove(int pieceLocation, int moveLocation) {
         //Inbounds check
         if (moveLocation > 63 || moveLocation < 0) {
@@ -63,6 +82,36 @@ public class Knight extends Piece {
         //Checks for attacks on same color
         } else if (this.isWhite == Board.getInstance().getSquare(moveLocation).getPiece().isWhite) {
             return false;
+        }
+
+        return true;
+    }
+
+    public boolean inBounds(int moveLocation) {
+        int difference = this.location - moveLocation;
+
+        if (moveLocation > 63 || moveLocation < 0) {
+            return false;
+        }
+
+        //Checks for wrap-arounds
+        if (this.location % 8 < 6) {
+            if (difference == 10 || difference == -6 || difference == 17 || difference == -15) {
+                return true;
+            }
+        } else if (this.location % 8 == 6) {
+            if (difference == 17 || difference == -15) {
+                return true;
+            }
+        }
+        if (this.location % 8 > 1) {
+            if (difference == 6 || difference == -10 || difference == 15 || difference == -17) {
+                return true;
+            }
+        } else if (this.location % 8 == 1) {
+            if (difference == 15 || difference == -17) {
+                return true;
+            }
         }
 
         return true;

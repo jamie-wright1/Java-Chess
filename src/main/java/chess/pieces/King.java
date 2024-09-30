@@ -1,5 +1,7 @@
 package chess.pieces;
 
+import chess.Board;
+
 import java.util.ArrayList;
 
 public class King extends Piece {
@@ -16,22 +18,35 @@ public class King extends Piece {
     @Override
     public ArrayList<Integer> findMoves() {
         ArrayList<Integer> defaultMoves = new ArrayList<>();
-        defaultMoves.add(location);
 
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 int check = location + j + 8*i;
-                if (inBounds(check)) {
+                if (inBounds(check) && checkValidMove(location, check)) {
                     defaultMoves.add(check);
                 }
             }
         }
-        return defaultMoves;
+        return trimMoves(defaultMoves);
     }
 
+
+    //King can never check other king
     @Override
-    public boolean checkValidMove(int pieceLocation, int moveLocation) {
+    public boolean isChecking() {
         return false;
+    }
+
+    public boolean checkValidMove(int pieceLocation, int moveLocation) {
+        //Protects cases where square is empty from null reference
+        if (Board.getInstance().getSquare(moveLocation).getValue() == 0) {
+            return true;
+            //Checks for attacks on same color
+        } else if (this.isWhite == Board.getInstance().getSquare(moveLocation).getPiece().isWhite) {
+            return false;
+        }
+
+        return true;
     }
 
     public boolean inBounds(int moveLocation) {

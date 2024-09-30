@@ -2,7 +2,7 @@ package chess;
 
 public class Main {
     public static void main (String[] args) {
-        Game chessGame = new Game();
+        Game chessGame = Game.getInstance();
         chessGame.runGame();
     }
 }

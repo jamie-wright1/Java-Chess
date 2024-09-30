@@ -5,7 +5,9 @@ import chess.Board;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Queen extends Piece{
+public class Queen extends Piece {
+    final int[] directions = {1, -1, 8, -8, 7, 9, -7, -9};
+
     public Queen(int value, int location) {
         super(value, location);
     }
@@ -14,9 +16,6 @@ public class Queen extends Piece{
     public ArrayList<Integer> findMoves() {
         ArrayList<Integer> validMoves = new ArrayList<>(0);
 
-        validMoves.add(this.location);
-
-        int[] directions = {1, -1, 8, -8, 7, 9, -7, -9};
         int[] distances = distanceToEdges();
 
         int i = 0;
@@ -43,7 +42,41 @@ public class Queen extends Piece{
             i++;
         }
 
-        return validMoves;
+        return trimMoves(validMoves);
+    }
+
+    @Override
+    public boolean isChecking() {
+        int[] distances = distanceToEdges();
+
+        int i = 0;
+        for (int movement : directions) {
+            int check = location + movement;
+
+            while (distances[i] > 0) {
+                //Attacking own color
+                if (checkAttackSquare(this.location, check, true)) {
+                    break;
+                //Attacking other color
+                } else if (checkAttackSquare(this.location, check, false)) {
+                    if (isWhite && Board.getInstance().getSquare(check).getValue() == 14) {
+                        return true;
+                    } else if (!isWhite && Board.getInstance().getSquare(check).getValue() == 22) {
+                        return true;
+                    } else {
+                        break;
+                    }
+                }
+
+                //Placed on empty square
+                check += movement;
+                distances[i]--;
+            }
+
+            i++;
+        }
+
+        return false;
     }
 
     //Returns whether attacking color of choice (same color if boolean true, other color if false)
@@ -58,7 +91,6 @@ public class Queen extends Piece{
             return !sameColor;
         }
     }
-
 
     public int[] distanceToEdges() {
         int right = 7 - location % 8;

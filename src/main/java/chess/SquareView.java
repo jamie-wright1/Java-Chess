@@ -14,9 +14,9 @@ public class SquareView extends JButton {
         setBorder(null);
 
         if ((row + column) % 2 == 0) {
-            setBackground(Color.LIGHT_GRAY);
+            setBackground(new Color(255, 211, 138).darker());
         } else {
-            setBackground(Color.GRAY);
+            setBackground(new Color(143, 95, 36).darker());
         }
 
         setIcon(squareType);
@@ -77,15 +77,16 @@ public class SquareView extends JButton {
 
     public void highlight() {
         JPanel highlight = new JPanel();
+        highlight.setBackground(new Color(200, 170, 230, 120));
+        //this.setForeground(new Color(200, 170, 230, 120));
 
         this.add(highlight);
-
-        highlight.setBackground(new Color(200, 170, 230, 120));
 
         this.repaint();
     }
 
     public void unHighlight() {
+        //this.setForeground(null);
         this.removeAll();
         this.repaint();
     }

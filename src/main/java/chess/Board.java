@@ -120,6 +120,22 @@ public class Board {
         return squares.get(location);
     }
 
+    public ArrayList<Integer> getColor (boolean getWhite) {
+        ArrayList<Integer> color = new ArrayList<>();
+
+        for (Square square : squares) {
+            int squareValue = square.getValue();
+
+            if (squareValue > 14 && getWhite) {
+                color.add(square.getLocation());
+            } else if (squareValue < 15 && squareValue > 0 && !getWhite) {
+                color.add(square.getLocation());
+            }
+        }
+
+        return color;
+    }
+
     public ArrayList<Integer> getBoardList() {
         ArrayList<Integer> list = new ArrayList<>();
 

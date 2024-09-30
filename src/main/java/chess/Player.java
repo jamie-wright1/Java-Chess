@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Player implements PropertyChangeListener {
     private String name;
     private boolean isWhite;
+    private boolean isInCheck;
 
     Piece pieceInHand;
     ArrayList<Integer> possibleMoves;
@@ -15,6 +16,7 @@ public class Player implements PropertyChangeListener {
     public Player(String name, boolean isWhite) {
         this.name = name;
         this.isWhite = isWhite;
+        this.isInCheck = false;
         this.pieceInHand = null;
         this.possibleMoves = new ArrayList<>(0);
     }
@@ -22,33 +24,20 @@ public class Player implements PropertyChangeListener {
     public void squareClicked(Square square) {
         Piece pieceClicked = square.getPiece();
 
-        //Piece exists at clicked location
-        if (pieceClicked != null) {
+        if (pieceInHand == null) {
             //Picking up own-colored piece
-            if (pieceClicked.isWhite() == this.isWhite && this.pieceInHand == null) {
+            if (pieceClicked != null && pieceClicked.isWhite() == this.isWhite) {
                 piecePickedUp(square);
-            //Attacking other-colored piece
-            } else if (pieceClicked.isWhite() != this.isWhite && this.pieceInHand != null) {
-                piecePutDown(square);
-            //Trying to pick up other-colored piece or attack own-colored piece
-            } else {
-                return;
             }
-        //Piece doesn't exist at clicked location
         } else {
-            //Placing down piece on empty square
-            if (pieceInHand != null) {
-                piecePutDown(square);
-            //Trying to pick up at a square with no piece
-            } else {
-                return;
-            }
+            //Attacking
+            piecePutDown(square);
         }
     }
 
     public void piecePutDown(Square square) {
         //Checks for piece put back down where picked up
-        if (square.getLocation() == possibleMoves.get(0)) {
+        if (square.getLocation() == pieceInHand.getLocation()) {
             Board.getInstance().piecePutDown(square, pieceInHand);
             pieceInHand = null;
             possibleMoves.clear();
@@ -81,8 +70,6 @@ public class Player implements PropertyChangeListener {
 
         return;
     }
-
-
 
     public void resign() {
 

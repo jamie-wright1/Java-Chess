@@ -8,8 +8,6 @@ import java.beans.PropertyChangeSupport;
 public class Controller {
     private BoardView boardView;
     private Board boardModel;
-    private Player whitePlayer;
-    private Player blackPlayer;
     private Game game;
 
     int turn;
@@ -17,8 +15,6 @@ public class Controller {
     public Controller(BoardView boardView, Board boardModel, Player playerOne, Player playerTwo, Game game) {
         this.boardView = boardView;
         this.boardModel = boardModel;
-        this.whitePlayer = playerOne;
-        this.blackPlayer = playerTwo;
         this.game = game;
 
 

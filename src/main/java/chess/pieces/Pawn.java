@@ -21,18 +21,34 @@ public class Pawn extends Piece {
 
         ArrayList<Integer> validMoves = new ArrayList<>(0);
 
-        validMoves.add(location);
-
         for (Integer move : defaultMoves) {
             if (checkValidMove(location, move)) {
                 validMoves.add(move);
             }
         }
 
-        return validMoves;
+        return trimMoves(validMoves);
     }
 
     @Override
+    public boolean isChecking() {
+        if (isWhite) {
+            if (inBounds(location + 7) && Board.getInstance().getSquare(location + 7).getValue() == 14) {
+                return true;
+            } else if (inBounds(location + 9) && Board.getInstance().getSquare(location + 9).getValue() == 14) {
+                return true;
+            }
+        } else {
+            if (inBounds(location - 7) && Board.getInstance().getSquare(location - 7).getValue() == 22) {
+                return true;
+            } else if (inBounds(location - 9) && Board.getInstance().getSquare(location - 9).getValue() == 22) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public boolean checkValidMove(int pieceLocation, int moveLocation) {
         if (this.isWhite) {
             return checkValidWhiteMoves(pieceLocation, moveLocation);
@@ -48,19 +64,12 @@ public class Pawn extends Piece {
             return false;
         }
 
+        if (!inBounds(moveLocation)) {
+            return false;
+        }
+
         //Checks for double-forward move validity
         if (pieceLocation > 15 && moveLocation == pieceLocation + 16) {
-            return false;
-        }
-
-        //Checks for move in-bounds
-        if (moveLocation > 63 || moveLocation < 0) {
-            return false;
-        }
-
-        //Checks for wrap-arounds
-        if ((pieceLocation % 8 == 7 && moveLocation == pieceLocation + 9) ||
-            (pieceLocation % 8 == 0 && moveLocation == pieceLocation + 7)) {
             return false;
         }
 
@@ -85,19 +94,12 @@ public class Pawn extends Piece {
             return false;
         }
 
+        if (!inBounds(moveLocation)) {
+            return false;
+        }
+
         //Checks for double-forward move validity
         if (pieceLocation < 50 && moveLocation == pieceLocation - 16) {
-            return false;
-        }
-
-        //Checks for move in-bounds
-        if (moveLocation > 63 || moveLocation < 0) {
-            return false;
-        }
-
-        //Checks for wrap-arounds
-        if ((pieceLocation % 8 == 7 && moveLocation == pieceLocation - 7) ||
-                (pieceLocation % 8 == 0 && moveLocation == pieceLocation - 9)) {
             return false;
         }
 
@@ -110,6 +112,25 @@ public class Pawn extends Piece {
         if ((moveLocation == pieceLocation - 9 || moveLocation == pieceLocation - 7) &&
             (Board.getInstance().getSquare(moveLocation).getValue() < 17)) {
             return false;
+        }
+
+        return true;
+    }
+
+    public boolean inBounds(int moveLocation) {
+        if (moveLocation > 63 || moveLocation < 0) {
+            return false;
+        }
+
+        //Checks for wrap-arounds
+        if (this.location % 8 == 7) {
+            if( moveLocation == this.location - 7 || moveLocation == this.location + 9) {
+                return false;
+            }
+        } else if (this.location % 8 == 0) {
+            if (moveLocation == this.location - 9 || moveLocation == this.location + 7) {
+                return false;
+            }
         }
 
         return true;

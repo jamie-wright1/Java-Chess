@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class Rook extends Piece {
     boolean isCastleable;
+    final int[] directions = {1, -1, 8, -8};
 
     public Rook(int value, int location) {
         super(value, location);
@@ -14,9 +15,7 @@ public class Rook extends Piece {
     @Override
     public ArrayList<Integer> findMoves() {
         ArrayList<Integer> validMoves = new ArrayList<>();
-        validMoves.add(location);
 
-        int[] directions = {1, -1, 8, -8};
         int[] distances = distanceToEdges();
 
         int i = 0;
@@ -43,7 +42,40 @@ public class Rook extends Piece {
             i++;
         }
 
-        return validMoves;
+        return trimMoves(validMoves);
+    }
+
+    @Override
+    public boolean isChecking() {
+        int[] distances = distanceToEdges();
+
+        int i = 0;
+        for (int movement : directions) {
+            int check = location + movement;
+
+            while (distances[i] > 0) {
+                //Attacking own color
+                if (checkAttackSquare(this.location, check, true)) {
+                    break;
+                    //Attacking other color
+                } else if (checkAttackSquare(this.location, check, false)) {
+                    if (isWhite && Board.getInstance().getSquare(check).getValue() == 14) {
+                        return true;
+                    } else if (!isWhite && Board.getInstance().getSquare(check).getValue() == 22) {
+                        return true;
+                    } else {
+                        break;
+                    }
+                }
+
+                //Placed on empty square
+                check += movement;
+                distances[i]--;
+            }
+
+            i++;
+        }
+        return false;
     }
 
     //Returns whether attacking color of choice (same color if boolean true, other color if false)

@@ -1,5 +1,8 @@
 package chess.pieces;
 
+import chess.Board;
+import chess.Game;
+
 import java.util.ArrayList;
 
 public abstract class Piece {
@@ -33,19 +36,11 @@ public abstract class Piece {
         public final int value = 8 * (1 + ordinal());
     }
 
-    static class Move {
-        private final int startLocation;
-        private final int moveLocation;
-
-        public Move(int startLocation, int moveLocation) {
-            this.startLocation = startLocation;
-            this.moveLocation = moveLocation;
-        }
-    }
-
     public int getValue() {
         return value;
     }
+
+    public int getLocation() { return location; }
 
     public boolean isWhite() {
         return isWhite;
@@ -57,8 +52,29 @@ public abstract class Piece {
 
     public abstract ArrayList<Integer> findMoves();
 
-    public boolean checkValidMove (int pieceLocation, int moveLocation) {
-        return false;
-    };
+    //Checks if move puts own king in check
+    public ArrayList<Integer> trimMoves(ArrayList<Integer> moves) {
+        ArrayList<Integer> trimMoves = new ArrayList<>();
+        Piece storeMoveLocation;
+
+        for (Integer move : moves) {
+            storeMoveLocation = Board.getInstance().getSquare(move).getPiece();
+
+            Board.getInstance().getSquare(location).removePiece();
+            Board.getInstance().getSquare(move).addPiece(this);
+
+            //Checking if own color is in check
+            if (Game.getInstance().checkForCheck(isWhite) == false) {
+                trimMoves.add(move);;
+            }
+
+            Board.getInstance().getSquare(location).addPiece(this);
+            Board.getInstance().getSquare(move).addPiece(storeMoveLocation);
+        }
+
+        return trimMoves;
+    }
+
+    public abstract boolean isChecking();
 
 }
