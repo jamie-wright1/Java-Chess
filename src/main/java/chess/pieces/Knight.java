@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 public class Knight extends Piece {
 
-
     public Knight(int value, int location) {
         super(value, location);
     }

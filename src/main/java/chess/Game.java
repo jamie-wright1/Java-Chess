@@ -14,6 +14,8 @@ public class Game extends JFrame implements PropertyChangeListener {
     private int turnNumber;
 
     private BoardView boardView;
+    private TopBarView topBar;
+
     private Board board;
     private Controller controller;
 
@@ -23,6 +25,7 @@ public class Game extends JFrame implements PropertyChangeListener {
     //Singleton game storing data for a game of chess
     private Game() {
         boardView = new BoardView();
+        topBar = new TopBarView();
         board = Board.getInstance();
         playerOne = new Player(getName(), true);
         playerTwo = new Player(getName(), false);
@@ -43,6 +46,7 @@ public class Game extends JFrame implements PropertyChangeListener {
         getContentPane().setBackground(Color.DARK_GRAY);
         setLayout(new BorderLayout());
         add(boardView, BorderLayout.CENTER);
+        add(topBar, BorderLayout.NORTH);
         pack();
         setResizable(false);
         setVisible(true);

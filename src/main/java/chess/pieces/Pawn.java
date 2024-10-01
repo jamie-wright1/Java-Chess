@@ -57,14 +57,18 @@ public class Pawn extends Piece {
         }
 
         //Sets up diagonal conditions beforehand to simplify if statements
-        boolean rightDiagonal = (Board.getInstance().getSquare(location + 9).getValue() < 15 &&
-                                Board.getInstance().getSquare(location + 9).getValue() > 0);
-        boolean leftDiagonal = (Board.getInstance().getSquare(location + 7).getValue() < 15 &&
-                                Board.getInstance().getSquare(location + 7).getValue() > 0);
-        boolean rightEnPessantable = (Board.getInstance().getSquare(location + 1).getValue() == 9 &&
-                                    Board.getInstance().getSquare(location + 1).getPiece().isEnPessantable());
-        boolean leftEnPessantable = (Board.getInstance().getSquare(location - 1).getValue() == 9 &&
-                                    Board.getInstance().getSquare(location - 1).getPiece().isEnPessantable());
+        boolean rightDiagonal = inBounds(location + 9) &&
+                                Board.getInstance().getSquare(location + 9).getValue() < 15 &&
+                                Board.getInstance().getSquare(location + 9).getValue() > 0;
+        boolean leftDiagonal = inBounds(location + 7) &&
+                                Board.getInstance().getSquare(location + 7).getValue() < 15 &&
+                                Board.getInstance().getSquare(location + 7).getValue() > 0;
+        boolean rightEnPessantable = inBounds(location + 9) &&
+                                    Board.getInstance().getSquare(location + 1).getValue() == 9 &&
+                                    Board.getInstance().getSquare(location + 1).getPiece().isEnPessantable();
+        boolean leftEnPessantable = inBounds(location + 7) &&
+                                    Board.getInstance().getSquare(location - 1).getValue() == 9 &&
+                                    Board.getInstance().getSquare(location - 1).getPiece().isEnPessantable();
 
         //Right diagonal check
         if (rightDiagonal || rightEnPessantable) {
@@ -90,12 +94,16 @@ public class Pawn extends Piece {
         }
 
         //Sets up diagonal conditions beforehand to simplify if statements
-        boolean rightDiagonal = Board.getInstance().getSquare(location - 7).getValue() > 14;
-        boolean leftDiagonal = Board.getInstance().getSquare(location - 9).getValue() > 14;
-        boolean rightEnPessantable = (Board.getInstance().getSquare(location + 1).getValue() == 17 &&
-                Board.getInstance().getSquare(location + 1).getPiece().isEnPessantable());
-        boolean leftEnPessantable = (Board.getInstance().getSquare(location - 1).getValue() == 17 &&
-                Board.getInstance().getSquare(location - 1).getPiece().isEnPessantable());
+        boolean rightDiagonal = inBounds(location - 7) &&
+                                Board.getInstance().getSquare(location - 7).getValue() > 14;
+        boolean leftDiagonal = inBounds(location - 9) &&
+                                Board.getInstance().getSquare(location - 9).getValue() > 14;
+        boolean rightEnPessantable = inBounds(location - 7) &&
+                                    Board.getInstance().getSquare(location + 1).getValue() == 17 &&
+                                    Board.getInstance().getSquare(location + 1).getPiece().isEnPessantable();
+        boolean leftEnPessantable = inBounds(location - 9) &&
+                                    Board.getInstance().getSquare(location - 1).getValue() == 17 &&
+                                    Board.getInstance().getSquare(location - 1).getPiece().isEnPessantable();
 
         //Right diagonal check
         if (rightDiagonal || rightEnPessantable) {

@@ -187,7 +187,25 @@ public class Board {
 
     //Returns piece in case of promotion
     public Piece specialRules(Square square, Piece piece) {
-        //Resets enPessants
+        int moveLocation = square.getLocation();
+        int pieceLocation = piece.getLocation();
+
+        //Checks enPessant capture
+        if (piece instanceof  Pawn) {
+            if (moveLocation == pieceLocation + 9 || moveLocation == pieceLocation - 7) {
+                Piece rightPiece = squares.get(pieceLocation + 1).getPiece();
+                if (rightPiece != null && rightPiece.isEnPessantable()) {
+                    squares.get(pieceLocation + 1).removePiece();
+                }
+            } else if (moveLocation == pieceLocation + 7 || moveLocation == pieceLocation - 9) {
+                Piece leftPiece = squares.get(pieceLocation - 1).getPiece();
+                if (leftPiece != null && leftPiece.isEnPessantable()) {
+                    squares.get(pieceLocation - 1).removePiece();
+                }
+            }
+        }
+
+        // Resets enPessants
         for (Square individualSquare : squares) {
             if (individualSquare.getPiece() instanceof Pawn) {
                 ((Pawn) individualSquare.getPiece()).setEnPessantable(false);
@@ -200,6 +218,25 @@ public class Board {
         }
 
         //Castleability
+        if (piece instanceof King) {
+            if (moveLocation == pieceLocation + 2) {
+                squares.get(pieceLocation + 1).addPiece(squares.get(pieceLocation + 3).getPiece());
+                squares.get(pieceLocation + 1).getPiece().updateLocation(pieceLocation + 1);
+                squares.get(pieceLocation + 3).removePiece();
+            } else if (moveLocation == pieceLocation - 2) {
+                squares.get(pieceLocation - 1).addPiece(squares.get(pieceLocation - 4).getPiece());
+                squares.get(pieceLocation - 1).getPiece().updateLocation(pieceLocation - 1);
+                squares.get(pieceLocation - 4).removePiece();
+            }
+        }
+
+
+        //Resets castleability
+        if (piece instanceof Rook) {
+            ((Rook) piece).setCastleable(false);
+        } else if (piece instanceof King) {
+            ((King) piece).setCastleable(false);
+        }
 
 
         //Promotion

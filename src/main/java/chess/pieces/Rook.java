@@ -10,6 +10,8 @@ public class Rook extends Piece {
 
     public Rook(int value, int location) {
         super(value, location);
+
+        isCastleable = true;
     }
 
     @Override
@@ -98,5 +100,13 @@ public class Rook extends Piece {
         int down = location/8;
 
         return new int[] {right, left, up, down};
+    }
+
+    public void setCastleable(boolean isCastleable) {
+        this.isCastleable = isCastleable;
+    }
+
+    public boolean isCastleable() {
+        return isCastleable;
     }
 }
