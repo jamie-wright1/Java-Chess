@@ -172,6 +172,9 @@ public class Board {
     public void moveMade(Square square, Piece piece) {
         ArrayList<Integer> oldList = getBoardList();
 
+        //Takes care of enPessant/Castling/Promotion things
+        piece = specialRules(square, piece);
+
         square.removePiece();
         square.addPiece(piece);
         piece.updateLocation(square.getLocation());
@@ -180,6 +183,39 @@ public class Board {
 
         propertyChangeSupport.firePropertyChange("boardUpdated", oldList, newList);
         propertyChangeSupport.firePropertyChange("turnOver", oldList, newList);
+    }
+
+    //Returns piece in case of promotion
+    public Piece specialRules(Square square, Piece piece) {
+        //Resets enPessants
+        for (Square individualSquare : squares) {
+            if (individualSquare.getPiece() instanceof Pawn) {
+                ((Pawn) individualSquare.getPiece()).setEnPessantable(false);
+            }
+        }
+
+        //Sets enPessant if conditions met
+        if (piece instanceof Pawn && (square.getLocation() == piece.getLocation() + 16 || square.getLocation() == piece.getLocation() - 16)) {
+            ((Pawn) piece).setEnPessantable(true);
+        }
+
+        //Castleability
+
+
+        //Promotion
+        if(piece instanceof Pawn && (square.getLocation() > 55 || square.getLocation() < 8)) {
+            int newValue;
+
+            if (piece.isWhite()) {
+                newValue = Piece.ColorValue.WHITE.value | Piece.PieceValue.QUEEN.value;
+            } else {
+                newValue = Piece.ColorValue.BLACK.value | Piece.PieceValue.QUEEN.value;
+            }
+
+            piece = new Queen(newValue, piece.getLocation());
+        }
+
+        return piece;
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {

@@ -77,4 +77,8 @@ public abstract class Piece {
 
     public abstract boolean isChecking();
 
+    public boolean isEnPessantable() {
+        return false;
+    }
+
 }

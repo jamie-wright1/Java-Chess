@@ -29,11 +29,4 @@ public class Square {
         }
     }
 
-    public String returnID() {
-        if (piece == null) {
-            return Integer.toString(this.location);
-        } else {
-            return Integer.toString(this.location) + Integer.toString(piece.getValue());
-        }
-    }
 }

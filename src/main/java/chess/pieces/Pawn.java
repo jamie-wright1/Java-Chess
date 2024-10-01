@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Pawn extends Piece {
-    boolean isEnPessantable;
-
+    private boolean isEnPessantable;
 
     public Pawn(int value, int location) {
         super(value, location);
@@ -15,16 +14,12 @@ public class Pawn extends Piece {
 
     @Override
     public ArrayList<Integer> findMoves() {
-        ArrayList<Integer> defaultMoves = new ArrayList<Integer>
-        (Arrays.asList(location + 8, location + 16, location + 7, location + 9,
-        location - 8, location - 16, location - 7, location - 9));
+        ArrayList<Integer> validMoves = new ArrayList<Integer>();
 
-        ArrayList<Integer> validMoves = new ArrayList<>(0);
-
-        for (Integer move : defaultMoves) {
-            if (checkValidMove(location, move)) {
-                validMoves.add(move);
-            }
+        if (isWhite) {
+            validMoves = findWhiteMoves();
+        } else {
+            validMoves = findBlackMoves();
         }
 
         return trimMoves(validMoves);
@@ -49,72 +44,69 @@ public class Pawn extends Piece {
         return false;
     }
 
-    public boolean checkValidMove(int pieceLocation, int moveLocation) {
-        if (this.isWhite) {
-            return checkValidWhiteMoves(pieceLocation, moveLocation);
-        } else {
-            return checkValidBlackMoves(pieceLocation, moveLocation);
+    //Pawn is only piece whose rules differ by color
+    public ArrayList<Integer> findWhiteMoves() {
+        ArrayList<Integer> validMoves = new ArrayList<>();
+
+        if (location < 56 && Board.getInstance().getSquare(location + 8).getValue() == 0) {
+            validMoves.add(location + 8);
+            //Double move forward if on starting square
+            if (location < 16 && Board.getInstance().getSquare(location + 16).getValue() == 0) {
+                validMoves.add(location + 16);
+            }
         }
+
+        //Sets up diagonal conditions beforehand to simplify if statements
+        boolean rightDiagonal = (Board.getInstance().getSquare(location + 9).getValue() < 15 &&
+                                Board.getInstance().getSquare(location + 9).getValue() > 0);
+        boolean leftDiagonal = (Board.getInstance().getSquare(location + 7).getValue() < 15 &&
+                                Board.getInstance().getSquare(location + 7).getValue() > 0);
+        boolean rightEnPessantable = (Board.getInstance().getSquare(location + 1).getValue() == 9 &&
+                                    Board.getInstance().getSquare(location + 1).getPiece().isEnPessantable());
+        boolean leftEnPessantable = (Board.getInstance().getSquare(location - 1).getValue() == 9 &&
+                                    Board.getInstance().getSquare(location - 1).getPiece().isEnPessantable());
+
+        //Right diagonal check
+        if (rightDiagonal || rightEnPessantable) {
+            validMoves.add(location + 9);
+        }
+        //Left diagonal check
+        if (leftDiagonal || leftEnPessantable) {
+            validMoves.add(location + 7);
+        }
+
+        return validMoves;
     }
 
-    //Pawn only piece whose rules differ by color
-    public boolean checkValidWhiteMoves(int pieceLocation, int moveLocation) {
-        //Checks for movement in right direction
-        if (moveLocation < pieceLocation) {
-            return false;
+    public ArrayList<Integer> findBlackMoves() {
+        ArrayList<Integer> validMoves = new ArrayList<>();
+
+        if (location > 7 && Board.getInstance().getSquare(location - 8).getValue() == 0) {
+            validMoves.add(location - 8);
+            //Double move forward if on starting square
+            if (location > 47 && Board.getInstance().getSquare(location - 16).getValue() == 0) {
+                validMoves.add(location - 16);
+            }
         }
 
-        if (!inBounds(moveLocation)) {
-            return false;
+        //Sets up diagonal conditions beforehand to simplify if statements
+        boolean rightDiagonal = Board.getInstance().getSquare(location - 7).getValue() > 14;
+        boolean leftDiagonal = Board.getInstance().getSquare(location - 9).getValue() > 14;
+        boolean rightEnPessantable = (Board.getInstance().getSquare(location + 1).getValue() == 17 &&
+                Board.getInstance().getSquare(location + 1).getPiece().isEnPessantable());
+        boolean leftEnPessantable = (Board.getInstance().getSquare(location - 1).getValue() == 17 &&
+                Board.getInstance().getSquare(location - 1).getPiece().isEnPessantable());
+
+        //Right diagonal check
+        if (rightDiagonal || rightEnPessantable) {
+            validMoves.add(location - 7);
+        }
+        //Left diagonal check
+        if (leftDiagonal || leftEnPessantable) {
+            validMoves.add(location - 9);
         }
 
-        //Checks for double-forward move validity
-        if (pieceLocation > 15 && moveLocation == pieceLocation + 16) {
-            return false;
-        }
-
-        //Checks if forward move blocked
-        if (moveLocation == pieceLocation + 8 && Board.getInstance().getSquare(moveLocation).getValue() != 0) {
-            return false;
-        }
-
-        //Checks if diagonals are black
-        if ((moveLocation == pieceLocation + 9 || moveLocation == pieceLocation + 7) &&
-        (Board.getInstance().getSquare(moveLocation).getValue() > 14 ||
-        Board.getInstance().getSquare(moveLocation).getValue() == 0)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean checkValidBlackMoves(int pieceLocation, int moveLocation) {
-        //Checks for movement in right direction
-        if (moveLocation > pieceLocation) {
-            return false;
-        }
-
-        if (!inBounds(moveLocation)) {
-            return false;
-        }
-
-        //Checks for double-forward move validity
-        if (pieceLocation < 50 && moveLocation == pieceLocation - 16) {
-            return false;
-        }
-
-        //Checks if forward move blocked
-        if (moveLocation == pieceLocation - 8 && Board.getInstance().getSquare(moveLocation).getValue() != 0) {
-            return false;
-        }
-
-        //Checks if diagonals are white
-        if ((moveLocation == pieceLocation - 9 || moveLocation == pieceLocation - 7) &&
-            (Board.getInstance().getSquare(moveLocation).getValue() < 17)) {
-            return false;
-        }
-
-        return true;
+        return validMoves;
     }
 
     public boolean inBounds(int moveLocation) {
@@ -134,6 +126,15 @@ public class Pawn extends Piece {
         }
 
         return true;
+    }
+
+    public void setEnPessantable(boolean isEnPessantable) {
+        this.isEnPessantable = isEnPessantable;
+    }
+
+    @Override
+    public boolean isEnPessantable() {
+        return isEnPessantable;
     }
 
 }

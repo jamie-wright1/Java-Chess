@@ -11,7 +11,7 @@ public class Game extends JFrame implements PropertyChangeListener {
 
     private String startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
-    private int turnNumber = 0;
+    private int turnNumber;
 
     private BoardView boardView;
     private Board board;
@@ -34,6 +34,8 @@ public class Game extends JFrame implements PropertyChangeListener {
         board.addPropertyChangeListener(this);
 
         board.fenToBoard(startFen);
+
+        turnNumber = 1;
 
         setTitle("Chess");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -62,7 +64,7 @@ public class Game extends JFrame implements PropertyChangeListener {
     }
 
     public void squareClicked(Square square) {
-        if (turnNumber % 2 == 0) {
+        if (turnNumber % 2 == 1) {
             playerOne.squareClicked(square);
         } else {
             playerTwo.squareClicked(square);
@@ -79,7 +81,10 @@ public class Game extends JFrame implements PropertyChangeListener {
             boolean isWhite = (turnNumber % 2 == 0);
 
             if (checkForCheck(isWhite)) {
-                checkForMate();
+                if (checkForMate(isWhite)) {
+                    this.remove(boardView);
+                }
+
             }
 
             turnNumber++;
@@ -92,15 +97,20 @@ public class Game extends JFrame implements PropertyChangeListener {
         for (Integer square: colorSquares) {
             if (board.getSquare(square).getPiece().isChecking()) {
                 return true;
-            };
+            }
         }
 
         return false;
     }
 
-    public boolean checkForMate() {
+    public boolean checkForMate(boolean checkForWhite) {
+        ArrayList<Integer> colorSquares = board.getColor(checkForWhite);
+        ArrayList<Integer> totalPossibleMoves = new ArrayList<>();
 
+        for (Integer square: colorSquares) {
+            totalPossibleMoves.addAll(board.getSquare(square).getPiece().findMoves());
+        }
 
-        return false;
+        return totalPossibleMoves.isEmpty();
     }
 }
