@@ -14,6 +14,7 @@ public class BoardView extends JPanel implements PropertyChangeListener {
         setLayout(null);
         setPreferredSize(new Dimension(600, 600));
         setLayout(new GridLayout(8, 8));
+
         setUpDisplay();
     }
 
@@ -63,6 +64,8 @@ public class BoardView extends JPanel implements PropertyChangeListener {
                 squares.get(index).highlight();
             }
         }
+
+        updateUI();
     }
 
     public void unHighlightBoard() {

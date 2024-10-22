@@ -7,8 +7,8 @@ import java.util.Arrays;
 
 public class Knight extends Piece {
 
-    public Knight(int value, int location) {
-        super(value, location);
+    public Knight(int value, int location, Board board) {
+        super(value, location, board);
     }
 
     @Override
@@ -56,11 +56,11 @@ public class Knight extends Piece {
 
         for (Integer move : moves) {
             if (isWhite) {
-                if (inBounds(move) && Board.getInstance().getSquare(move).getValue() == 14) {
+                if (inBounds(move) && board.getSquare(move).getValue() == 14) {
                     return true;
                     }
             } else {
-                if (inBounds(move) && Board.getInstance().getSquare(move).getValue() == 22) {
+                if (inBounds(move) && board.getSquare(move).getValue() == 22) {
                     return true;
                 }
             }
@@ -76,10 +76,10 @@ public class Knight extends Piece {
         }
 
         //Protects cases where square is empty from null reference
-        if (Board.getInstance().getSquare(moveLocation).getValue() == 0) {
+        if (board.getSquare(moveLocation).getValue() == 0) {
             return true;
         //Checks for attacks on same color
-        } else if (this.isWhite == Board.getInstance().getSquare(moveLocation).getPiece().isWhite) {
+        } else if (this.isWhite == board.getSquare(moveLocation).getPiece().isWhite) {
             return false;
         }
 

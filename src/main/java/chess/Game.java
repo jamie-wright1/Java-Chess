@@ -4,41 +4,48 @@ import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
 public class Game extends JFrame implements PropertyChangeListener {
-    private static Game game;
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-    private String startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+    private enum GameMode {Versus, AI};
+    private GameMode mode;
 
     private int turnNumber;
 
     private BoardView boardView;
     private TopBarView topBar;
-
     private Board board;
     private Controller controller;
+    private Player playerOne;
+    private Player playerTwo;
+    private AIPlayer ai;
 
-    Player playerOne;
-    Player playerTwo;
+    public Game() {
+        propertyChangeSupport = new PropertyChangeSupport(this);
 
-    //Singleton game storing data for a game of chess
-    private Game() {
+        mode = GameMode.Versus;
+
         boardView = new BoardView();
         topBar = new TopBarView();
-        board = Board.getInstance();
-        playerOne = new Player(getName(), true);
-        playerTwo = new Player(getName(), false);
+        board = new Board();
 
-        controller = new Controller(boardView, board, playerOne, playerTwo, this);
+        //Default is versus mode
+        playerOne = new Player(getName(), true, board);
+        playerTwo = new Player(getName(), false, board);
+        ai = null;
+
+        controller = new Controller(boardView, board, this, topBar);
 
         //boardView and game "listen" to the board
         board.addPropertyChangeListener(boardView);
         board.addPropertyChangeListener(this);
 
-        board.fenToBoard(startFen);
+        this.addPropertyChangeListener(topBar);
 
-        turnNumber = 1;
+        setUpGame();
 
         setTitle("Chess");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -52,15 +59,24 @@ public class Game extends JFrame implements PropertyChangeListener {
         setVisible(true);
     }
 
-    public static Game getInstance() {
-        if (game == null) {
-            game = new Game();
-        }
-        return game;
+    public void setUpGame() {
+        String startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+
+        board.fenToBoard(startFen);
+        turnNumber = 1;
+        mode = GameMode.Versus;
     }
 
-    public void runGame() {
+    public void setUpAIGame() {
+        String startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
+        if (ai == null) {
+            ai = new AIPlayer(board, false);
+        }
+
+        board.fenToBoard(startFen);
+        turnNumber = 1;
+        mode = GameMode.AI;
     }
 
     public String getName() {
@@ -77,44 +93,39 @@ public class Game extends JFrame implements PropertyChangeListener {
         return;
     }
 
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("turnOver".equals(evt.getPropertyName())) {
             //Checking the color that did not just move
             boolean isWhite = (turnNumber % 2 == 0);
 
-            if (checkForCheck(isWhite)) {
-                if (checkForMate(isWhite)) {
+            if (board.checkForCheck(isWhite)) {
+                board.getKing(isWhite).setCastleable(false);
+            }
+
+            //if (checkForCheck(isWhite)) {
+                if (board.checkForMate(isWhite)) {
+                    propertyChangeSupport.firePropertyChange("gameOver", evt.getOldValue(), evt.getNewValue());
                     this.remove(boardView);
                 }
 
-            }
+           // }
 
             turnNumber++;
-        }
-    }
 
-    public boolean checkForCheck(boolean checkForWhite) {
-        ArrayList<Integer> colorSquares = board.getColor(!checkForWhite);
-
-        for (Integer square: colorSquares) {
-            if (board.getSquare(square).getPiece().isChecking()) {
-                return true;
+            if (mode == GameMode.valueOf("AI") && turnNumber % 2 == 0) {
+                ai.turn(board);
             }
         }
 
-        return false;
+        this.repaint();
     }
 
-    public boolean checkForMate(boolean checkForWhite) {
-        ArrayList<Integer> colorSquares = board.getColor(checkForWhite);
-        ArrayList<Integer> totalPossibleMoves = new ArrayList<>();
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
 
-        for (Integer square: colorSquares) {
-            totalPossibleMoves.addAll(board.getSquare(square).getPiece().findMoves());
-        }
-
-        return totalPossibleMoves.isEmpty();
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 }

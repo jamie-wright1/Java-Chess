@@ -6,19 +6,28 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 public class Player implements PropertyChangeListener {
-    private String name;
-    private boolean isWhite;
-    private boolean isInCheck;
+    protected String name;
+    protected boolean isWhite;
+    //Each player is playing on a specific board
+    protected Board board;
 
     Piece pieceInHand;
     ArrayList<Integer> possibleMoves;
 
-    public Player(String name, boolean isWhite) {
+    public Player(String name, boolean isWhite, Board board) {
         this.name = name;
         this.isWhite = isWhite;
-        this.isInCheck = false;
         this.pieceInHand = null;
         this.possibleMoves = new ArrayList<>(0);
+        this.board = board;
+    }
+
+    public Player() {
+        this.name = "Default";
+        this.isWhite = true;
+        this.pieceInHand = null;
+        this.possibleMoves = new ArrayList<>(0);
+        this.board = null;
     }
 
     public void squareClicked(Square square) {
@@ -38,7 +47,7 @@ public class Player implements PropertyChangeListener {
     public void piecePutDown(Square square) {
         //Checks for piece put back down where picked up
         if (square.getLocation() == pieceInHand.getLocation()) {
-            Board.getInstance().piecePutDown(square, pieceInHand);
+            board.piecePutDown(square, pieceInHand);
             pieceInHand = null;
             possibleMoves.clear();
         }
@@ -53,7 +62,7 @@ public class Player implements PropertyChangeListener {
         }
 
         if (possibleMove) {
-            Board.getInstance().moveMade(square, pieceInHand);
+            board.moveMade(square, pieceInHand);
             pieceInHand = null;
             possibleMoves.clear();
         }
@@ -66,7 +75,7 @@ public class Player implements PropertyChangeListener {
         possibleMoves.clear();
         possibleMoves = pieceInHand.findMoves();
 
-        Board.getInstance().piecePickedUp(square, possibleMoves);
+        board.piecePickedUp(square, possibleMoves);
 
         return;
     }

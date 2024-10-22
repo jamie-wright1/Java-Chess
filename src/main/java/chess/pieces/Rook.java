@@ -5,11 +5,11 @@ import chess.Board;
 import java.util.ArrayList;
 
 public class Rook extends Piece {
-    boolean isCastleable;
-    final int[] directions = {1, -1, 8, -8};
+    private boolean isCastleable;
+    private final int[] directions = {1, -1, 8, -8};
 
-    public Rook(int value, int location) {
-        super(value, location);
+    public Rook(int value, int location, Board board) {
+        super(value, location, board);
 
         isCastleable = true;
     }
@@ -61,9 +61,9 @@ public class Rook extends Piece {
                     break;
                     //Attacking other color
                 } else if (checkAttackSquare(this.location, check, false)) {
-                    if (isWhite && Board.getInstance().getSquare(check).getValue() == 14) {
+                    if (isWhite && board.getSquare(check).getValue() == 14) {
                         return true;
-                    } else if (!isWhite && Board.getInstance().getSquare(check).getValue() == 22) {
+                    } else if (!isWhite && board.getSquare(check).getValue() == 22) {
                         return true;
                     } else {
                         break;
@@ -83,10 +83,10 @@ public class Rook extends Piece {
     //Returns whether attacking color of choice (same color if boolean true, other color if false)
     public boolean checkAttackSquare(int pieceLocation, int moveLocation, boolean sameColor) {
         //Protects cases where square is empty from null reference
-        if (Board.getInstance().getSquare(moveLocation).getValue() == 0) {
+        if (board.getSquare(moveLocation).getValue() == 0) {
             return false;
         //Checks for attacks on same color if sameColor true, otherwise other color
-        } else if (this.isWhite == Board.getInstance().getSquare(moveLocation).getPiece().isWhite) {
+        } else if (this.isWhite == board.getSquare(moveLocation).getPiece().isWhite) {
             return sameColor;
         } else {
             return !sameColor;

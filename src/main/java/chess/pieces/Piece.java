@@ -11,11 +11,15 @@ public abstract class Piece {
     protected boolean isWhite;
     //protected ArrayList<Integer> defaultMoves;
 
-    public Piece(int value, int location) {
+    Board board;
+
+    public Piece(int value, int location, Board board) {
         this.value = value;
         this.location = location;
         isWhite = value > 16;
         //defaultMoves = new ArrayList<>(0);
+
+        this.board = board;
     }
 
     public enum PieceValue {
@@ -58,27 +62,23 @@ public abstract class Piece {
         Piece storeMoveLocation;
 
         for (Integer move : moves) {
-            storeMoveLocation = Board.getInstance().getSquare(move).getPiece();
+            storeMoveLocation = board.getSquare(move).getPiece();
 
-            Board.getInstance().getSquare(location).removePiece();
-            Board.getInstance().getSquare(move).addPiece(this);
+            board.getSquare(location).removePiece();
+            board.getSquare(move).addPiece(this);
 
             //Checking if own color is in check
-            if (Game.getInstance().checkForCheck(isWhite) == false) {
+            if (board.checkForCheck(isWhite) == false) {
                 trimMoves.add(move);;
             }
 
-            Board.getInstance().getSquare(location).addPiece(this);
-            Board.getInstance().getSquare(move).addPiece(storeMoveLocation);
+            board.getSquare(location).addPiece(this);
+            board.getSquare(move).addPiece(storeMoveLocation);
         }
 
         return trimMoves;
     }
 
     public abstract boolean isChecking();
-
-    public boolean isEnPessantable() {
-        return false;
-    }
 
 }
