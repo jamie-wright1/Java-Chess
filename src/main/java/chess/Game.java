@@ -6,6 +6,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Game extends JFrame implements PropertyChangeListener {
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -43,6 +44,7 @@ public class Game extends JFrame implements PropertyChangeListener {
         board.addPropertyChangeListener(boardView);
         board.addPropertyChangeListener(this);
 
+        this.addPropertyChangeListener(boardView);
         this.addPropertyChangeListener(topBar);
 
         setUpGame();
@@ -65,6 +67,9 @@ public class Game extends JFrame implements PropertyChangeListener {
         board.fenToBoard(startFen);
         turnNumber = 1;
         mode = GameMode.Versus;
+        controller.activateBoard();
+
+        propertyChangeSupport.firePropertyChange("gameStarted", null, mode);
     }
 
     public void setUpAIGame() {
@@ -77,6 +82,9 @@ public class Game extends JFrame implements PropertyChangeListener {
         board.fenToBoard(startFen);
         turnNumber = 1;
         mode = GameMode.AI;
+        controller.activateBoard();
+
+        propertyChangeSupport.firePropertyChange("gameStarted", null, mode);
     }
 
     public String getName() {
@@ -103,13 +111,17 @@ public class Game extends JFrame implements PropertyChangeListener {
                 board.getKing(isWhite).setCastleable(false);
             }
 
-            //if (checkForCheck(isWhite)) {
-                if (board.checkForMate(isWhite)) {
+            if (board.noPossibleMoves(isWhite)) {
+                if (board.checkForCheck(isWhite)) {
                     propertyChangeSupport.firePropertyChange("gameOver", evt.getOldValue(), evt.getNewValue());
-                    this.remove(boardView);
+                    int kingIndex = board.getKing(isWhite).getLocation();
+                    propertyChangeSupport.firePropertyChange("newHighlights", evt.getOldValue(), new ArrayList(Arrays.asList(kingIndex)));
+                } else {
+                    propertyChangeSupport.firePropertyChange("stalemate", evt.getOldValue(), evt.getNewValue());
                 }
 
-           // }
+                controller.freezeBoard();
+           }
 
             turnNumber++;
 

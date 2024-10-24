@@ -9,12 +9,14 @@ public class Controller {
     TopBarView topBarView;
     private Board boardModel;
     private Game game;
+    private boolean boardActive;
 
     public Controller(BoardView boardView, Board boardModel, Game game, TopBarView topBarView) {
         this.boardView = boardView;
         this.boardModel = boardModel;
         this.game = game;
         this.topBarView = topBarView;
+        boardActive = true;
 
         setUpViews();
     }
@@ -33,7 +35,9 @@ public class Controller {
                 Square square = boardModel.getSquare(finalI);
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    game.squareClicked(square);
+                    if (boardActive) {
+                        game.squareClicked(square);
+                    }
                 }
             });
             i++;
@@ -46,6 +50,7 @@ public class Controller {
         VSMode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                boardActive = true;
                 game.setUpGame();
             }
         });
@@ -55,17 +60,22 @@ public class Controller {
         AIMode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                boardActive = true;
                 game.setUpAIGame();
             }
         });
 
-        JButton button3 = topBarView.getButton3();
+        /*JButton button3 = topBarView.getButton3();
 
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
             }
-        });
+        });*/
     }
+
+    public void activateBoard() { boardActive = true; }
+
+    public void freezeBoard() { boardActive = false; }
 }

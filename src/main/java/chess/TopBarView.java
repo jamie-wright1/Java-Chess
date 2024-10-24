@@ -8,7 +8,7 @@ import java.beans.PropertyChangeListener;
 public class TopBarView extends JPanel implements PropertyChangeListener {
     JButton VSMode = new JButton("VS Mode");
     JButton AIMode = new JButton("AI Mode");
-    JButton button3 = new JButton("button3");
+    //JButton button3 = new JButton("button3");
 
     JTextArea textField = new JTextArea("");
 
@@ -16,7 +16,7 @@ public class TopBarView extends JPanel implements PropertyChangeListener {
         setLayout(new FlowLayout());
         this.add(VSMode);
         this.add(AIMode);
-        this.add(button3);
+        //this.add(button3);
         this.add(textField);
 
         textField.setBackground(Color.WHITE);
@@ -27,14 +27,20 @@ public class TopBarView extends JPanel implements PropertyChangeListener {
 
     public JButton getAIMode() { return AIMode; }
 
-    public JButton getButton3() { return button3; }
+    //public JButton getButton3() { return button3; }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("gameOver".equals(evt.getPropertyName())) {
             textField.setText("Checkmate!");
-
-            updateUI();
         }
+        if ("stalemate".equals(evt.getPropertyName())) {
+            textField.setText("Stalemate!");
+        }
+        if ("gameStarted".equals(evt.getPropertyName())) {
+            textField.setText(null);
+        }
+
+        updateUI();
     }
 }

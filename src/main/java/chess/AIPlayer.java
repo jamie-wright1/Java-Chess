@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
+
 public class AIPlayer extends Player {
     public AIPlayer() {
         super();
@@ -22,7 +23,9 @@ public class AIPlayer extends Player {
     }
 
     //False if no possible moves
-    public boolean turn(Board board) {
+    public void turn(Board board) {
+        long startTime = System.nanoTime();
+
         ArrayList<ArrayList<Integer>> validMoves;
 
         validMoves = findMoves(board, false);
@@ -33,7 +36,9 @@ public class AIPlayer extends Player {
         board.piecePickedUp(board.getSquare(bestMove.get(0)), new ArrayList<Integer>(0));
         board.moveMade(board.getSquare(bestMove.get(1)), movingPiece);
 
-        return true;
+        System.out.println((System.nanoTime() - startTime) / 1000000);
+
+        return;
     }
 
     public ArrayList<ArrayList<Integer>> findMoves(Board board, boolean white) {
@@ -227,14 +232,9 @@ public class AIPlayer extends Player {
         /*
         favorability += parameters.kingStayPut(board)
         favorability += parameters.pawnsAdvanced(board)
-        favorability += parameters.checks(board)
-        */
 
-        if (board.checkForCheck(true)) {
-            favorability -= 20;
-        } else if (board.checkForCheck(false)) {
-            favorability += 20;
-        }
+         */
+        favorability += checks(board);
 
         if (board.checkForMate(true)) {
             return -998;
@@ -296,6 +296,20 @@ public class AIPlayer extends Player {
         return favorability;
     }
 
+    public int checks(Board board) {
+        if (board.checkForCheck(true)) {
+            return 15;
+        } else if (board.checkForCheck(false)) {
+            return 15;
+        } else {
+            return 0;
+        }
+    }
+
+    public int pawnsAdvanced(Board board) {
+        return 0;
+    }
+
     public ArrayList<ArrayList<Integer>> moveOrdering(Board board, ArrayList<ArrayList<Integer>> possibleMoves) {
         for (ArrayList<Integer> move : possibleMoves) {
             int pieceMoving = board.getSquare(move.get(0)).getValue();
@@ -321,19 +335,6 @@ public class AIPlayer extends Player {
         }
 
         return possibleMoves;
-    }
-
-    public void tempPrint(Board board) {
-        for (int i = 0; i < 64; i++) {
-            if (board.getSquare(i).getValue() < 10) {
-                System.out.print(0);
-            }
-            System.out.print(board.getSquare(i).getValue() + " ");
-            if (i % 8 == 7) {
-                System.out.println();
-            }
-        }
-        System.out.println("\n");
     }
 }
 

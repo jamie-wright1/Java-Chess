@@ -292,7 +292,7 @@ public class Board {
         return false;
     }
 
-    public boolean checkForMate(boolean checkForWhite) {
+    public boolean noPossibleMoves(boolean checkForWhite) {
         ArrayList<Integer> colorSquares = this.getColor(checkForWhite);
         ArrayList<Integer> totalPossibleMoves = new ArrayList<>();
 
@@ -301,6 +301,21 @@ public class Board {
         }
 
         return totalPossibleMoves.isEmpty();
+    }
+
+    public boolean checkForMate(boolean checkForWhite) {
+        ArrayList<Integer> colorSquares = this.getColor(checkForWhite);
+        ArrayList<Integer> totalPossibleMoves = new ArrayList<>();
+
+        for (Integer square: colorSquares) {
+            totalPossibleMoves.addAll(this.getSquare(square).getPiece().findMoves());
+        }
+
+        if (totalPossibleMoves.isEmpty()) {
+            return checkForCheck(checkForWhite);
+        } else {
+            return false;
+        }
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {

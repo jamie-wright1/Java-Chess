@@ -4,6 +4,7 @@ import chess.pieces.Piece;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class SquareView extends JButton {
     int location;

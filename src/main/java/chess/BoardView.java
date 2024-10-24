@@ -65,6 +65,10 @@ public class BoardView extends JPanel implements PropertyChangeListener {
             }
         }
 
+        if ("gameStarted".equals(evt.getPropertyName())) {
+            unHighlightBoard();
+        }
+
         updateUI();
     }
 
