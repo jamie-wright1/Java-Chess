@@ -6,6 +6,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class Board {
@@ -189,6 +190,7 @@ public class Board {
         ArrayList<Integer> newList = getBoardList();
 
         propertyChangeSupport.firePropertyChange("boardUpdated", oldList, newList);
+        propertyChangeSupport.firePropertyChange("moveMade", oldList, newList);
         propertyChangeSupport.firePropertyChange("turnOver", oldList, newList);
     }
 
@@ -279,6 +281,156 @@ public class Board {
         return null;
     }
 
+    public ArrayList<ArrayList<Integer>> findMoves(boolean white) {
+        ArrayList<Integer> validLocations = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> validMoves = new ArrayList<>();
+
+        for (Integer square : getColor(white)) {
+            Piece currentPiece = getSquare(square).getPiece();
+
+            validLocations= currentPiece.findMoves();
+
+            for (Integer location : validLocations) {
+                validMoves.add(new ArrayList<Integer>(Arrays.asList(square, location)));
+            }
+        }
+
+        return validMoves;
+    }
+
+    public ArrayList<Integer> findPins(boolean white) {
+        ArrayList<Integer> pins = new ArrayList<>();
+
+
+        for (Integer location : getColor(white)) {
+            Square square = getSquare(location);
+
+            if (square.getPiece() instanceof Rook) {
+                pins.addAll(rookPins(square));
+            } else if (square.getPiece() instanceof Bishop) {
+                pins.addAll(bishopPins(square));
+            } else if (square.getPiece() instanceof Queen) {
+                pins.addAll(queenPins(square));
+            }
+        }
+
+        return pins;
+    }
+
+   /* public ArrayList<Integer> possibleAttacksOnKing(boolean color) {
+        ArrayList<Integer> ultraVision = new ArrayList<>();
+
+        int i = 0;
+        for (Square squares : getSquares()) {
+            int square = squares.getValue();
+
+            if ((square > 0 && square < 16 && color) || (square > 16 && color)) {
+                ArrayList<Integer> pieceVision = PieceSight(square, i, this, true);
+
+                pieceVision = [move.movePosition for move in pieceVision];
+
+                if (!pieceVision.isEmpty()) {
+                    ultraVision.addAll(pieceVision);
+
+                    return ultraVision;
+                }
+            }
+        }
+    } */
+
+    public ArrayList<Integer> rookPins(Square square) {
+        ArrayList<Integer> pins = new ArrayList<>();
+        int[] directions = {1, -1, 8, -8};
+        int[] distances = ((Rook) square.getPiece()).distanceToEdges();
+
+        int i = 0;
+        for (Integer direction : directions) {
+            ArrayList<Integer> movesSet = new ArrayList<>(Arrays.asList(square.getLocation()));
+            int check = square.getLocation() + direction;
+
+            while (distances[i] > 0) {
+                boolean attackingOpposite = (22 > getSquare(check).getValue() && 16 < getSquare(check).getValue() && square.getLocation() < 16);
+                attackingOpposite = attackingOpposite || (getSquare(check).getValue() < 14 && square.getLocation() > 16);
+
+                if (getSquare(check).getValue() == 0 || attackingOpposite) {
+                    movesSet.add(check);
+                    check += direction;
+                    distances[i]--;
+                    i++;
+                } else if (getSquare(check).getValue() == 14 && square.getValue() > 16 || getSquare(check).getValue() == 22 && square.getValue() < 16) {
+                    pins.addAll(movesSet);
+                    distances[i] = 0;
+                } else {
+                    distances[i] = 0;
+                }
+            }
+        }
+
+        return pins;
+    }
+
+    public ArrayList<Integer> bishopPins(Square square) {
+        ArrayList<Integer> pins = new ArrayList<>();
+        int[] directions = {7, -7, 9, -9};
+        int[] distances = ((Bishop) square.getPiece()).distanceToEdges();
+
+        int i = 0;
+        for (Integer direction : directions) {
+            ArrayList<Integer> movesSet = new ArrayList<>(Arrays.asList(square.getLocation()));
+            int check = square.getLocation() + direction;
+
+            while (distances[i] > 0) {
+                boolean attackingOpposite = (22 > getSquare(check).getValue() && 16 < getSquare(check).getValue() && square.getLocation() < 16);
+                attackingOpposite = attackingOpposite || (getSquare(check).getValue() < 14 && square.getLocation() > 16);
+
+                if (getSquare(check).getValue() == 0 || attackingOpposite) {
+                    movesSet.add(check);
+                    check += direction;
+                    distances[i]--;
+                    i++;
+                } else if (getSquare(check).getValue() == 14 && square.getValue() > 16 || getSquare(check).getValue() == 22 && square.getValue() < 16) {
+                    pins.addAll(movesSet);
+                    distances[i] = 0;
+                } else {
+                    distances[i] = 0;
+                }
+            }
+        }
+
+        return pins;
+    }
+
+    public ArrayList<Integer> queenPins(Square square) {
+        ArrayList<Integer> pins = new ArrayList<>();
+        int[] directions = {1, -1, 8, -8, 7, -7, 9, -9};
+        int[] distances = ((Queen) square.getPiece()).distanceToEdges();
+
+        int i = 0;
+        for (Integer direction : directions) {
+            ArrayList<Integer> movesSet = new ArrayList<>(Arrays.asList(square.getLocation()));
+            int check = square.getLocation() + direction;
+
+            while (distances[i] > 0) {
+                boolean attackingOpposite = (22 > getSquare(check).getValue() && 16 < getSquare(check).getValue() && square.getLocation() < 16);
+                attackingOpposite = attackingOpposite || (getSquare(check).getValue() < 14 && square.getLocation() > 16);
+
+                if (getSquare(check).getValue() == 0 || attackingOpposite) {
+                    movesSet.add(check);
+                    check += direction;
+                    distances[i]--;
+                    i++;
+                } else if (getSquare(check).getValue() == 14 && square.getValue() > 16 || getSquare(check).getValue() == 22 && square.getValue() < 16) {
+                    pins.addAll(movesSet);
+                    distances[i] = 0;
+                } else {
+                    distances[i] = 0;
+                }
+            }
+        }
+
+        return pins;
+    }
+
     //Checks if parameter color is UNDER check
     public boolean checkForCheck(boolean checkForWhite) {
         ArrayList<Integer> colorSquares = this.getColor(!checkForWhite);
@@ -317,6 +469,40 @@ public class Board {
             return false;
         }
     }
+
+    public String getSquareNum(int location) {
+        String squareLoc = "";
+
+        switch (location % 8) {
+            case 0:
+                squareLoc = "A";
+                break;
+            case 1:
+                squareLoc = "B";
+                break;
+            case 2:
+                squareLoc = "C";
+                break;
+            case 3:
+                squareLoc = "D";
+                break;
+            case 4:
+                squareLoc = "E";
+                break;
+            case 5:
+                squareLoc = "F";
+                break;
+            case 6:
+                squareLoc = "G";
+                break;
+            case 7:
+                squareLoc = "H";
+        }
+
+        squareLoc += location/8;
+        return squareLoc;
+    }
+
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(listener);

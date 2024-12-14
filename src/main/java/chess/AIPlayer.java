@@ -28,7 +28,7 @@ public class AIPlayer extends Player {
 
         ArrayList<ArrayList<Integer>> validMoves;
 
-        validMoves = findMoves(board, false);
+        validMoves = board.findMoves(false);
 
         ArrayList<Integer> bestMove = minimax(validMoves, board);
 
@@ -41,22 +41,7 @@ public class AIPlayer extends Player {
         return;
     }
 
-    public ArrayList<ArrayList<Integer>> findMoves(Board board, boolean white) {
-        ArrayList<Integer> validLocations = new ArrayList<>();
-        ArrayList<ArrayList<Integer>> validMoves = new ArrayList<>();
 
-        for (Integer square : board.getColor(white)) {
-            Piece currentPiece = board.getSquare(square).getPiece();
-
-            validLocations= currentPiece.findMoves();
-
-            for (Integer location : validLocations) {
-                validMoves.add(new ArrayList<Integer>(Arrays.asList(square, location)));
-            }
-        }
-
-        return validMoves;
-    }
 
     public ArrayList<Integer> minimax(ArrayList<ArrayList<Integer>> possibleMoves, Board board) {
         int depth = 3;
@@ -99,7 +84,7 @@ public class AIPlayer extends Player {
             return calculateFavorability(board);
         }
 
-        ArrayList<ArrayList<Integer>> possibleMoves = findMoves(board, true);
+        ArrayList<ArrayList<Integer>> possibleMoves = board.findMoves(true);
         possibleMoves = moveOrdering(board, possibleMoves);
 
         for (ArrayList<Integer> move : possibleMoves) {
@@ -133,7 +118,7 @@ public class AIPlayer extends Player {
             return calculateFavorability(board);
         }
 
-        ArrayList<ArrayList<Integer>> possibleMoves = findMoves(board, false);
+        ArrayList<ArrayList<Integer>> possibleMoves = board.findMoves(false);
         possibleMoves = moveOrdering(board, possibleMoves);
 
         for (ArrayList<Integer> move : possibleMoves) {

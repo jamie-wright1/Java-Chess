@@ -16,6 +16,10 @@ public class BoardView extends JPanel implements PropertyChangeListener {
         setLayout(new GridLayout(8, 8));
 
         setUpDisplay();
+
+        for (SquareView square : squares) {
+            square.setEnabled(false);
+        }
     }
 
     public void setUpDisplay() {

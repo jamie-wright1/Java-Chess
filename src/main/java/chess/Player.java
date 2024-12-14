@@ -80,6 +80,8 @@ public class Player implements PropertyChangeListener {
         return;
     }
 
+    public void setName(String name) { this.name = name; }
+
     public void resign() {
 
     }

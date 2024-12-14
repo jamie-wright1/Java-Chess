@@ -111,15 +111,15 @@ public class AITest {
         AIPlayer ai = new AIPlayer();
 
         board.fenToBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-        ArrayList<ArrayList<Integer>> moves = ai.findMoves(board, true);
+        ArrayList<ArrayList<Integer>> moves = board.findMoves(true);
         assertEquals(20, moves.size());
-        moves = ai.findMoves(board, false);
+        moves = board.findMoves(false);
         assertEquals(20, moves.size());
 
         board.fenToBoard("3k4/8/1B4N1/8/5b2/8/2K5/8");
-        moves = ai.findMoves(board, true);
+        moves = board.findMoves(true);
         assertEquals(21, moves.size());
-        moves = ai.findMoves(board, false);
+        moves = board.findMoves(false);
         assertEquals(4, moves.size());
     }
 
